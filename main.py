@@ -18,7 +18,9 @@ if __name__ == "__main__":
 
     def get_auth(auth):
         
-        Login.get_token(auth)
+        api = API(auth)
+        count=api.unread()
+        print count.dm
         
         
     

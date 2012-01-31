@@ -5,10 +5,10 @@ from PyQt4.QtGui import *
 from ui_login import Ui_Form
 import ConfigParser
 from weibopy.auth import OAuthHandler , BasicAuthHandler
-"""import json
+import json
 from weibopy.api import API
 import urllib2
-import xml.dom.minidom"""
+import xml.dom.minidom
 import os
 from PyQt4 import QtGui, QtCore
 
@@ -36,10 +36,20 @@ class LoginWindow(QWidget,Ui_Form):
     def get_Token(self,username,password):
     
          self.auth = OAuthHandler("2839869753","e38cb74f0f38eb33a1e0e25b7adde7cb")        
-         #path = os.path.expanduser('~')+"/.config/.zucchini.conf"
          auth_url=self.auth.get_authorization_url()
-
-         
+         auth_url += "&oauth_callback=xml&userId="+username+"&passwd="+password
+         result = urllib2.urlopen(auth_url)
+         xmls = result.read()
+         doc = xml.dom.minidom.parseString(xmls)
+         root = doc.documentElement
+         verifier = root.getElementsByTagName("oauth_verifier")[0]
+         oauth_verifier = ""
+         for node in verifier.childNodes:
+             oauth_verifier = node.data
+         self.auth.get_access_token(oauth_verifier)
+         token = self.auth.access_token.key
+         tokenSecret = self.auth.access_token.secret
+         self.auth.setToken(token, tokenSecret)
     
     def login(self):
         

@@ -25,8 +25,8 @@ import ConfigParser
     return auth"""
 
 
-def get_token(auth):
-    auth_url=self.auth.get_authorization_url()
+def get_token(auth_url):
+    
     result = urllib2.urlopen(auth_url)
     xmls = result.read()
     doc = xml.dom.minidom.parseString(xmls)
@@ -35,9 +35,9 @@ def get_token(auth):
     oauth_verifier = ""
     for node in verifier.childNodes:
         oauth_verifier = node.data
-    self.auth.get_access_token(oauth_verifier)      
-    token = self.auth.access_token.key
-    tokenSecret = self.auth.access_token.secret
+    auth.get_access_token(oauth_verifier)      
+    token = auth.access_token.key
+    tokenSecret = auth.access_token.secret
     return token,tokenSecret
     
 
