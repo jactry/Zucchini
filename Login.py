@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import with_statement
-#from weibopy.auth import OAuthHandler
-#from weibopy.api import API
-#import urllib2
-#import xml.dom.minidom
+import json
+import urllib2
+import xml.dom.minidom
 from weibopy.auth import OAuthHandler , BasicAuthHandler
 from weibopy.api import API
 import os
@@ -19,20 +18,27 @@ import ConfigParser
     
 
         
-def get_auth(token,tokenSecret):
-    global auth
+"""def get_auth(token,tokenSecret):
+    
     auth = OAuthHandler("2839869753","e38cb74f0f38eb33a1e0e25b7adde7cb")
     auth.setToken(token,tokenSecret)
-    return auth
+    return auth"""
 
 
-def get_token(path):
-    config = ConfigParser.ConfigParser()
-    global token,tokenSecret
-    with open(path,'rw') as cfgfile:
-        config.readfp(cfgfile)
-        token = config.get('user','key')
-        tokenSecret = config.get('user','secret')
-    return token,tokenSecret   
+def get_token(auth):
+    auth_url=self.auth.get_authorization_url()
+    result = urllib2.urlopen(auth_url)
+    xmls = result.read()
+    doc = xml.dom.minidom.parseString(xmls)
+    root = doc.documentElement
+    verifier = root.getElementsByTagName("oauth_verifier")[0]
+    oauth_verifier = ""
+    for node in verifier.childNodes:
+        oauth_verifier = node.data
+    self.auth.get_access_token(oauth_verifier)      
+    token = self.auth.access_token.key
+    tokenSecret = self.auth.access_token.secret
+    return token,tokenSecret
+    
 
 
