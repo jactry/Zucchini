@@ -86,4 +86,3 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         pass
-
