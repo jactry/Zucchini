@@ -39,7 +39,9 @@ if __name__ == "__main__":
             launcher.set_property("count",number)
             launcher.set_property("count_visible", True)
             if globals().has_key("news"):
-                if number > news :
+                if number < news:
+                    news = number
+                elif number > news :
                     body="Mester,you have "+str(count.dm)+" message(s),"+str(count.mentions)+" mention(s),and "+str(count.comments)+" comment(s)."
                     tray.showMessage("News",body,QtGui.QSystemTrayIcon.MessageIcon(1),500)
                     if launcher.get_property("urgent") :
