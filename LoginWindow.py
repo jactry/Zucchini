@@ -26,6 +26,8 @@ class LoginWindow(QWidget,Ui_Form):
         self.connect(self.pushButton_pic,SIGNAL("clicked()"),self.open_link)
         self.lineEdit_pwd.setEchoMode(QLineEdit.Password)
         self.pushButton_login.setAutoDefault(True)
+        self.timer_label = QtCore.QTimer()
+        self.connect(self.timer_label, SIGNAL("timeout()"),self.hide_label_text)
         self.move_to_center()
         
         
@@ -81,28 +83,32 @@ class LoginWindow(QWidget,Ui_Form):
                 oauth_verifier = node.data
             auth.get_access_token(oauth_verifier)
             return auth
+    def hide_label_text(self):
+        self.label_warming.setText(" ")
     
     def login(self):
-        if self.network_error():
-            self.label_warming.setText("<font color=red><b>Please check your network.</b></font>")
-        elif self.lineEdit_user.text().isEmpty():
+        if self.lineEdit_user.text().isEmpty():
             self.label_warming.setText("<font color=red><b>Please type your username!</b></font>")
+            self.timer_label.start(1200)
         elif self.lineEdit_pwd.text().isEmpty():
+            self.timer_label.start(1200)
             self.label_warming.setText("<font color=red><b>Please type your password!</b></font>")
         else:       
-            username=str(self.lineEdit_user.text())
-            password=str(self.lineEdit_pwd.text())
-            self.auth=OAuthHandler("2302181135","fbcf36a8412d628d9c1fc27e4cbbe06d")
-            self.auth=self.get_auth(self.auth, username, password)
-            if self.auth == 1:
-                self.label_warming.setText("<font color=red><b>Please check your username and password.</b></font>")
+            if self.network_error():
+                self.timer_label.start(1200)
+                self.label_warming.setText("<font color=red><b>Please check your network.</b></font>")
             else:
+                username=str(self.lineEdit_user.text())
+                password=str(self.lineEdit_pwd.text())
+                self.auth=OAuthHandler("2302181135","fbcf36a8412d628d9c1fc27e4cbbe06d")
+                self.auth=self.get_auth(self.auth, username, password)
+                if self.auth == 1:
+                    self.timer_label.start(1200)
+                    self.label_warming.setText("<font color=red><b>Please check your username and password.</b></font>")
+                else:
+                    self.to_auth.emit(self.auth)
+                    self.hide()
             
-                self.to_auth.emit(self.auth)
-                self.hide()
-            
-             
-          
         
     def exit(self):
          self.close()
